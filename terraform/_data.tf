@@ -64,3 +64,14 @@ data "aws_ami" "eks_default" {
     values = ["amazon-eks-node-${local.cluster_version}-v*"]
   }
 }
+
+### Logging module data resources:
+data "aws_eks_cluster_auth" "eks_cluster" {
+  name  = module.eks.cluster_id
+}
+
+data "aws_eks_cluster" "eks_cluster" {
+  name = module.eks.cluster_id
+}
+
+data "aws_partition" "current" {}

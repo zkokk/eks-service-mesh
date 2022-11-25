@@ -5,7 +5,7 @@ module "eks" {
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
   cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = false
+  cluster_endpoint_public_access  = true
 
   cluster_addons = {
     coredns = {
@@ -29,6 +29,7 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   manage_aws_auth_configmap = true
+  create_aws_auth_configmap = false
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
@@ -79,47 +80,48 @@ module "eks" {
   eks_managed_node_groups = {
     # Complete
     complete = {
-      name            = "complete-eks-mng"
+      name = "complete-eks-mng"
       use_name_prefix = true
 
       subnet_ids = module.vpc.private_subnets
 
-      min_size     = 1
-      max_size     = 5
+      min_size = 1
+      max_size = 5
       desired_size = 1
 
-      ami_id                     = data.aws_ami.eks_default.image_id
+      ami_id = data.aws_ami.eks_default.image_id
       enable_bootstrap_user_data = true
-      bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
+      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
       pre_bootstrap_user_data = <<-EOT
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
       EOT
 
-      capacity_type        = "SPOT"
+      capacity_type = "SPOT"
       force_update_version = true
-      instance_types       = ["t3.medium", "m5.large", "t3.large"]
+      instance_types = ["t3.medium", "m5.large", "t3.large"]
+
 
       description = "EKS managed node group example launch template"
 
-      ebs_optimized           = true
+      ebs_optimized = true
       disable_api_termination = false
-      enable_monitoring       = false
+      enable_monitoring = false
 
-      create_iam_role          = true
-      iam_role_name            = "eks-managed-node-group-complete-example"
+      create_iam_role = true
+      iam_role_name = "eks-managed-node-group-complete-example"
       iam_role_use_name_prefix = false
-      iam_role_description     = "EKS managed node group complete example role"
-      iam_role_tags            = {
+      iam_role_description = "EKS managed node group complete example role"
+      iam_role_tags = {
         Purpose = "Protector of the kubelet"
       }
       iam_role_additional_policies = [
         "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
       ]
 
-      create_security_group          = true
-      security_group_name            = "eks-managed-node-group-complete-example"
+      create_security_group = true
+      security_group_name = "eks-managed-node-group-complete-example"
       security_group_use_name_prefix = false
 
       tags = {
@@ -137,6 +139,7 @@ module "vpc_cni_irsa" {
 
   role_name_prefix      = "VPC-CNI-IRSA"
   attach_vpc_cni_policy = true
+  vpc_cni_enable_ipv4   = true
 
   oidc_providers = {
     main = {
