@@ -2,8 +2,8 @@
 Cosg-webapp is simple web application created by "Container and Orchestration" specialty group for testing purposes.
 Application will be used in onboarding task which need to be performed from new members of the group.
 
-Application prints simple message on coloured background. 
-Color of the background could be provided with "--color" flag and the name it name based on the following list of allowed colors "red", "green", "blue", "blue2", "darkblue" and "pink". If the application is started without any flags it will choose one of the allowed colors on a random base.
+Application prints simple message on colored background. 
+Color of the background could be provided with "--color" flag and its name based on the following list of allowed colors "red", "green", "blue", "blue2", "darkblue" and "pink". If the application is started without any flags it will choose one of the allowed colors on a random base.
 
 ## How to run the application:
 1. Clone the repository with the application code <repo to the code>
