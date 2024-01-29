@@ -1,5 +1,5 @@
 locals {
-  name            = "swo-baseline"
+  name            = "swo-gitops"
   cluster_version = "1.28"
   region          = var.region
 
