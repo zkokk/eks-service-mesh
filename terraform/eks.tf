@@ -1,6 +1,6 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.30.3"
+  version = "20.2.999"
 
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
@@ -67,7 +67,7 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    instance_types = ["t1.nano"]
 
     # We are using the IRSA created below for permissions
     # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
@@ -100,7 +100,7 @@ module "eks" {
 
       capacity_type = "SPOT"
       force_update_version = true
-      instance_types = ["t3.medium", "m5.large", "t3.large"]
+      instance_types = ["t1.nano"]
 
 
       description = "EKS managed node group example launch template"
@@ -117,7 +117,7 @@ module "eks" {
         Purpose = "Protector of the kubelet"
       }
       iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+#        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
       ]
 
       create_security_group = true
@@ -132,21 +132,21 @@ module "eks" {
   tags = local.tags
 }
 
-
-module "vpc_cni_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 4.12"
-
-  role_name_prefix      = "VPC-CNI-IRSA"
-  attach_vpc_cni_policy = true
-  vpc_cni_enable_ipv4   = true
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:aws-node"]
-    }
-  }
-
-  tags = local.tags
-}
+#
+#module "vpc_cni_irsa" {
+#  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+#  version = "~> 4.12"
+#
+#  role_name_prefix      = "VPC-CNI-IRSA"
+#  attach_vpc_cni_policy = true
+#  vpc_cni_enable_ipv4   = true
+#
+#  oidc_providers = {
+#    main = {
+#      provider_arn               = module.eks.oidc_provider_arn
+#      namespace_service_accounts = ["kube-system:aws-node"]
+#    }
+#  }
+#
+#  tags = local.tags
+#}
