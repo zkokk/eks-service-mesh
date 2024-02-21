@@ -4,23 +4,23 @@ variable "subnet_ids" {
 }
 variable "env" {
   description = "Environment"
-  default     = ""
+  default     = "demo"
 }
 variable "ecr_image" {
   description = "Image location"
-  default     = ""
+  default     = "public.ecr.aws/bitnami/tomcat:latest"
 }
 variable "cont_port" {
   description = "Task container port"
-  default     = ""
+  default     = "8080"
 }
 variable "host_port" {
   description = "Host container port"
-  default     = ""
+  default     = "8080"
 }
 variable "cw_log_group_name" {
   description = "CloudWatch log group to stream logs to"
-  default     = ""
+  default     = "/demo/application"
 }
 variable "region" {
   description = "AWS Region"

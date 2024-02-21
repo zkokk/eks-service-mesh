@@ -52,5 +52,7 @@ module "eks-addons" {
     ]
   }
 
+  enable_
+
   depends_on = [var.eks]
 }
