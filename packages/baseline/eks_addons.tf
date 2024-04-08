@@ -1,7 +1,7 @@
 module "eks-addons" {
 
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.12.0"
+  version = "1.16.2"
 
   cluster_name      = local.name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -11,21 +11,20 @@ module "eks-addons" {
   # Cluster Auto-scaler
   enable_cluster_autoscaler = true
   cluster_autoscaler        = {
-    namespace     = "kube-system"
-    name          = "cluster-autoscaler"
-    description   = "A Helm chart to deploy cluster-autoscaler"
-    chart         = "cluster-autoscaler"
-    chart_version = "9.29.1"
-    repository    = "https://kubernetes.github.io/autoscaler"
-    set           = []
-    set_sensitive = []
+    namespace     = "cluster-autoscaler"
   }
 
   # AWS LB Controller
   enable_aws_load_balancer_controller = true
+  aws_load_balancer_controller = {
+    namespace     = "alb"
+  }
 
   # Metrics Server
   enable_metrics_server = true
+  metrics_server      = {
+    namespace     = "metrics-server"
+  }
 
   depends_on = [module.eks]
 }

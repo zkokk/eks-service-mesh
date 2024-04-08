@@ -67,11 +67,11 @@ data "aws_ami" "eks_default" {
 
 ### Logging module data resources:
 data "aws_eks_cluster_auth" "eks_cluster" {
-  name  = module.eks.cluster_id
+  name  = "swo-baseline"
 }
 
 data "aws_eks_cluster" "eks_cluster" {
-  name = module.eks.cluster_id
+  name = "swo-baseline"
 }
 
 data "aws_partition" "current" {}
