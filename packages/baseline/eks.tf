@@ -1,6 +1,6 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.21.0"
+  version = "20.8.4"
 
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
@@ -9,14 +9,19 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
+      most_recent = true
       resolve_conflicts = "OVERWRITE"
     }
-    kube-proxy = {}
+    kube-proxy = {
+      most_recent = true
+    }
     vpc-cni    = {
+      most_recent = true
       resolve_conflicts        = "OVERWRITE"
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
     }
     aws-ebs-csi-driver = {
+      most_recent = true
       resolve_conflicts = "OVERWRITE"
     }
   }
@@ -31,11 +36,11 @@ module "eks" {
   vpc_id     = data.aws_vpc.main.id
   subnet_ids = data.aws_subnets.private.ids
 
-  manage_aws_auth_configmap = true
-  create_aws_auth_configmap = false
-
   # Encryption ?
-  cluster_encryption_config = "asd"
+  cluster_encryption_config = [{
+    provider_key_arn = aws_kms_key.eks.arn
+    resources        = ["secrets"]
+  }]
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
@@ -72,7 +77,7 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    instance_types = ["t3.medium", "m5.large", "m5n.large", "m5zn.large"]
 
     # We are using the IRSA created below for permissions
     # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
@@ -81,6 +86,8 @@ module "eks" {
     # See https://github.com/aws/containers-roadmap/issues/1666 for more context
     iam_role_attach_cni_policy = true
   }
+  
+  enable_cluster_creator_admin_permissions = true
 
   eks_managed_node_groups = {
     # Complete
@@ -121,9 +128,9 @@ module "eks" {
       iam_role_tags            = {
         Purpose = "Protector of the kubelet"
       }
-      iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-      ]
+      iam_role_additional_policies = {
+        AWSadditionalpolisy = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      }
 
       create_security_group          = true
       security_group_name            = "eks-managed-node-group-complete-example"
@@ -138,6 +145,21 @@ module "eks" {
   tags = local.tags
 }
 
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = local.tags
+}
+
+resource "aws_kms_key" "ebs" {
+  description             = "Customer managed key to encrypt EKS managed node group volumes"
+  deletion_window_in_days = 7
+  policy                  = data.aws_iam_policy_document.ebs.json
+
+  tags = local.tags
+}
 
 module "vpc_cni_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
@@ -155,4 +177,25 @@ module "vpc_cni_irsa" {
   }
 
   tags = local.tags
+}
+
+resource "kubernetes_namespace" "metrics-server" {
+  metadata {
+    name = "metrics-server"
+  }
+  depends_on = [module.eks]
+}
+
+resource "kubernetes_namespace" "cluster-autoscaler" {
+  metadata {
+    name = "cluster-autoscaler"
+  }
+  depends_on = [module.eks]
+}
+
+resource "kubernetes_namespace" "alb" {
+  metadata {
+    name = "alb"
+  }
+  depends_on = [module.eks]
 }

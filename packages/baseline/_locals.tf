@@ -1,6 +1,6 @@
 locals {
   name            = "swo-baseline"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
   region          = var.region
 
   tags = merge({
