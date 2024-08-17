@@ -71,7 +71,7 @@ module "alb" {
     }
   }
 
-  listeners     = {}
+  listeners = {}
   target_groups = {
     demo-ecs = {
       name_prefix                       = "d1"
@@ -95,7 +95,7 @@ module "alb" {
 
       protocol_version = "HTTP1"
       port             = var.host_port
-      tags             = {
+      tags = {
         InstanceTargetGroupTag = "demo-1"
       }
     }
@@ -129,13 +129,13 @@ module "ecs" {
 module "demo" {
   source = "../"
 
-  app_name             = local.name
-  app_subnets          = var.subnet_ids
+  app_name    = local.name
+  app_subnets = var.subnet_ids
   container_definition = jsonencode([
     {
-      name         = "${local.name}-demo-app"
-      image        = var.ecr_image
-      essential    = true
+      name      = "${local.name}-demo-app"
+      image     = var.ecr_image
+      essential = true
       portMappings = [
         {
           containerPort = var.cont_port
@@ -149,7 +149,7 @@ module "demo" {
       ]
       logConfiguration = {
         logDriver = "awslogs"
-        options   = {
+        options = {
           awslogs-group         = var.cw_log_group_name
           awslogs-region        = var.region
           awslogs-stream-prefix = "DemoPrefix"
@@ -162,7 +162,7 @@ module "demo" {
   iam_policy_task_role      = ""
   iam_policy_execution_role = ""
   lb_dns_name               = var.lb_dns_name
-  lb_target_groups          = [
+  lb_target_groups = [
     {
       lb_target_group_arn = module.alb.target_groups["demo-ecs"]
       container_port      = var.cont_port

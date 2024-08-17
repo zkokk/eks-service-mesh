@@ -3,9 +3,9 @@
 # ---------------------------------------------------------------------------------------------------------------------
 resource "kubernetes_namespace_v1" "amazon_cloudwatch" {
   metadata {
-    name   = var.namespace_name
+    name = var.namespace_name
     labels = {
-      "name": var.namespace_name
+      "name" : var.namespace_name
     }
   }
 }
@@ -40,7 +40,7 @@ resource "kubernetes_service_account_v1" "fluentbit_sa" {
 # IAM / RBAC for FluentBit
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_iam_role" "fluentbit_sa_irsa" {
-  name     = format("%s-%s", local.prefix_name, "sa-role")
+  name = format("%s-%s", local.prefix_name, "sa-role")
   #tags     = var.tags
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -63,9 +63,9 @@ resource "aws_iam_role" "fluentbit_sa_irsa" {
 }
 
 resource "aws_iam_policy" "fluentbit_sa_irsa_cloudwatch_policy" {
-  count       = local.use_cloudwatch_for_logs == "true" ? 1 : 0
-  name        = local.fluentbit_log_policies.log_to_cloudwatch
-  policy      = data.aws_iam_policy_document.fluentbit_sa_irsa_log_to_cloudwatch.json
+  count  = local.use_cloudwatch_for_logs == "true" ? 1 : 0
+  name   = local.fluentbit_log_policies.log_to_cloudwatch
+  policy = data.aws_iam_policy_document.fluentbit_sa_irsa_log_to_cloudwatch.json
 }
 
 resource "aws_iam_role_policy_attachment" "fluentbit_sa_irsa_cloudwatch_attachment" {
@@ -75,9 +75,9 @@ resource "aws_iam_role_policy_attachment" "fluentbit_sa_irsa_cloudwatch_attachme
 }
 
 resource "aws_iam_policy" "fluentbit_sa_irsa_s3_policy" {
-  count       = local.use_s3_for_logs == "true" ? 1 : 0
-  name        = local.fluentbit_log_policies.log_to_s3
-  policy      = data.aws_iam_policy_document.fluentbit_sa_irsa_log_to_s3[0].json
+  count  = local.use_s3_for_logs == "true" ? 1 : 0
+  name   = local.fluentbit_log_policies.log_to_s3
+  policy = data.aws_iam_policy_document.fluentbit_sa_irsa_log_to_s3[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "fluentbit_sa_irsa_s3_attachment" {
@@ -98,9 +98,9 @@ resource "kubernetes_cluster_role_v1" "fluentbit_role" {
   }
 
   rule {
-    api_groups        = [""]
-    resources         = ["namespaces", "pods", "pods/logs", "nodes", "nodes/proxy"]
-    verbs             = ["get", "list", "watch"]
+    api_groups = [""]
+    resources  = ["namespaces", "pods", "pods/logs", "nodes", "nodes/proxy"]
+    verbs      = ["get", "list", "watch"]
   }
 }
 
@@ -125,18 +125,18 @@ resource "kubernetes_cluster_role_binding_v1" "fluentbit_rolebinding" {
 # ---------------------------------------------------------------------------------------------------------------------
 # Currently FluentBit does not support auto-creation of CloudWatch Groups with KMS key and that is the reason why we create the KMS and Log Groups separately check enhancement ticket https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/issues/119.
 resource "aws_kms_key" "fluentbit_cloudwatch_kms" {
-  for_each = local.log_group_names
-  description                          = "Custom KMS keys used by FluentBit to encrypt CloudWatch Log Groups `${each.value["log_group_name"]}`"
-  deletion_window_in_days              = each.value["kms_deletion_window_in_days"]
+  for_each                = local.log_group_names
+  description             = "Custom KMS keys used by FluentBit to encrypt CloudWatch Log Groups `${each.value["log_group_name"]}`"
+  deletion_window_in_days = each.value["kms_deletion_window_in_days"]
   #tags                                 = local.ami_kms_key_tags
-  policy                               = data.aws_iam_policy_document.kms_log_to_cloudwatch[each.key].json
-  enable_key_rotation                  = true
+  policy              = data.aws_iam_policy_document.kms_log_to_cloudwatch[each.key].json
+  enable_key_rotation = true
 }
 
 resource "aws_kms_alias" "fluentbit_cloudwatch_kms_alias" {
-  for_each = local.log_group_names
-  name                    = "alias/${each.key}"
-  target_key_id           = aws_kms_key.fluentbit_cloudwatch_kms[each.key].key_id
+  for_each      = local.log_group_names
+  name          = "alias/${each.key}"
+  target_key_id = aws_kms_key.fluentbit_cloudwatch_kms[each.key].key_id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ resource "aws_kms_alias" "fluentbit_cloudwatch_kms_alias" {
 # ---------------------------------------------------------------------------------------------------------------------
 # Currently FluentBit does not support auto-creation of CloudWatch Groups with KMS key and that is the reason why we create the KMS and Log Groups separately check enhancement ticket https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/issues/119.
 resource "aws_cloudwatch_log_group" "fluentbit_log_group" {
-  for_each = local.log_group_names
+  for_each          = local.log_group_names
   name              = each.value["log_group_name"]
   retention_in_days = each.value["retention_in_days"]
   kms_key_id        = aws_kms_key.fluentbit_cloudwatch_kms[each.key].arn
@@ -156,18 +156,18 @@ resource "aws_cloudwatch_log_group" "fluentbit_log_group" {
 # FluentBit KMS for S3
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_kms_key" "fluentbit_s3_kms" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null && local.s3_bucket_configs.s3_kms_key_id == null ? 1 : 0
-  description                          = "Custom KMS keys used by FluentBit to encrypt logs in S3"
-  deletion_window_in_days              = local.s3_bucket_configs.s3_kms_deletion_window_in_days
+  count                   = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null && local.s3_bucket_configs.s3_kms_key_id == null ? 1 : 0
+  description             = "Custom KMS keys used by FluentBit to encrypt logs in S3"
+  deletion_window_in_days = local.s3_bucket_configs.s3_kms_deletion_window_in_days
   #tags                                 = local.ami_kms_key_tags
-  policy                               = data.aws_iam_policy_document.kms_log_to_s3[0].json
-  enable_key_rotation                  = true
+  policy              = data.aws_iam_policy_document.kms_log_to_s3[0].json
+  enable_key_rotation = true
 }
 
 resource "aws_kms_alias" "fluentbit_s3_kms_alias" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null && local.s3_bucket_configs.s3_kms_key_id == null ? 1 : 0
-  name                    = "alias/${local.s3_bucket_configs.s3_bucket_name}"
-  target_key_id           = aws_kms_key.fluentbit_s3_kms[0].key_id
+  count         = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null && local.s3_bucket_configs.s3_kms_key_id == null ? 1 : 0
+  name          = "alias/${local.s3_bucket_configs.s3_bucket_name}"
+  target_key_id = aws_kms_key.fluentbit_s3_kms[0].key_id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -177,24 +177,24 @@ resource "aws_s3_bucket" "fluentbit_s3_eks_logs" {
   count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   #  provider      = aws.databunker
   #depends_on = [aws_s3_bucket.s3_access_logs]
-  bucket        = "${local.s3_bucket_configs.s3_bucket_name}"
-  force_destroy = "false"
+  bucket              = local.s3_bucket_configs.s3_bucket_name
+  force_destroy       = "false"
   object_lock_enabled = false
 
-//  logging {
-//    target_bucket = "${var.s3_settings.s3_access_log_bucket_name}-${local.current_account_id}"
-//    target_prefix = "log/"
-//  }
+  //  logging {
+  //    target_bucket = "${var.s3_settings.s3_access_log_bucket_name}-${local.current_account_id}"
+  //    target_prefix = "log/"
+  //  }
 }
 
 resource "aws_s3_bucket_acl" "fluentbit_s3_eks_logs_acl" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
+  count  = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   bucket = aws_s3_bucket.fluentbit_s3_eks_logs[0].id
   acl    = local.s3_bucket_configs.s3_acl
 }
 
 resource "aws_s3_bucket_versioning" "fluentbit_s3_eks_logs_versioning" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
+  count  = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   bucket = aws_s3_bucket.fluentbit_s3_eks_logs[0].id
   versioning_configuration {
     status = local.s3_bucket_configs.s3_versioning
@@ -202,7 +202,7 @@ resource "aws_s3_bucket_versioning" "fluentbit_s3_eks_logs_versioning" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "fluentbit_s3_eks_logs_sse" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
+  count  = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   bucket = aws_s3_bucket.fluentbit_s3_eks_logs[0].bucket
 
   rule {
@@ -214,7 +214,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "fluentbit_s3_eks_
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "fluentbit_s3_eks_logs_lifecycle_conf" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
+  count  = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   bucket = aws_s3_bucket.fluentbit_s3_eks_logs[0].id
 
   rule {
@@ -244,7 +244,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "fluentbit_s3_eks_logs_lifecycl
 }
 
 resource "aws_s3_bucket_policy" "fluentbit_s3_eks_logs_policy" {
-  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
+  count  = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   bucket = aws_s3_bucket.fluentbit_s3_eks_logs[0].id
   policy = data.aws_iam_policy_document.s3_bucket_policy_enable_tls[0].json
 }
@@ -300,32 +300,32 @@ resource "kubernetes_daemon_set_v1" "fluentbit_daemonset" {
     name      = local.prefix_name
     namespace = kubernetes_namespace_v1.amazon_cloudwatch.metadata[0].name
     labels = {
-      "k8s-app": local.prefix_name
-      "version": "v1"
-      "kubernetes.io/cluster-service": "true"
+      "k8s-app" : local.prefix_name
+      "version" : "v1"
+      "kubernetes.io/cluster-service" : "true"
     }
   }
 
   spec {
     selector {
       match_labels = {
-        "k8s-app": local.prefix_name
+        "k8s-app" : local.prefix_name
       }
     }
 
     template {
       metadata {
         labels = {
-          "k8s-app": local.prefix_name
-          "version": "v1"
-          "kubernetes.io/cluster-service": "true"
+          "k8s-app" : local.prefix_name
+          "version" : "v1"
+          "kubernetes.io/cluster-service" : "true"
         }
       }
 
       spec {
         container {
-          name  = local.prefix_name
-          image = var.fluentbit_image
+          name              = local.prefix_name
+          image             = var.fluentbit_image
           image_pull_policy = "Always"
 
           dynamic "env" {

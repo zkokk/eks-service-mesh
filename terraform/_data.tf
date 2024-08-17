@@ -67,11 +67,19 @@ data "aws_ami" "eks_default" {
 
 ### Logging module data resources:
 data "aws_eks_cluster_auth" "eks_cluster" {
-  name  = module.eks.cluster_id
+  name = module.eks.cluster_name
+
 }
 
 data "aws_eks_cluster" "eks_cluster" {
-  name = module.eks.cluster_id
+  name = module.eks.cluster_name
+
+  depends_on = [module.eks]
 }
 
 data "aws_partition" "current" {}
+
+data "aws_vpc" "my_vpc_id" {
+  id = module.vpc.vpc_id
+}
+

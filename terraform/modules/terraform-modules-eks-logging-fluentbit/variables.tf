@@ -1,13 +1,13 @@
 variable "fluentbit_cluster_info_configs" {
   description = "FluentBit major configuration settings"
   type        = map(string)
-  default     = {
-    "logs.region"    = "us-east-1",
-    "cluster.name"   = "swo-onboarding",
-    "http.server"    = "On",
-    "http.port"      = "2020",
-    "read.head"      = "Off",
-    "read.tail"      = "On"
+  default = {
+    "logs.region"  = "eu-west-1",
+    "cluster.name" = "swo-onboarding",
+    "http.server"  = "On",
+    "http.port"    = "2020",
+    "read.head"    = "Off",
+    "read.tail"    = "On"
   }
 }
 

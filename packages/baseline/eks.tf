@@ -110,9 +110,9 @@ module "eks" {
         export USE_MAX_PODS=false
       EOT
 
-      capacity_type        = "SPOT"
+      capacity_type        = "ON_DEMAND"
       force_update_version = true
-      instance_types       = ["t3.medium", "m5.large", "t3.large"]
+      instance_types       = ["t3.medium"]
 
 
       description = "EKS managed node group example launch template"

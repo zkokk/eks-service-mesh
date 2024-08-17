@@ -1,6 +1,6 @@
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 5.0"
 
   name = local.name
   cidr = "10.0.0.0/16"
@@ -10,8 +10,8 @@ module "vpc" {
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 
   enable_ipv6                     = false
-  assign_ipv6_address_on_creation = false
-  create_egress_only_igw          = true
+#  assign_ipv6_address_on_creation = false
+#  create_egress_only_igw          = true
 
   enable_nat_gateway   = true
   single_nat_gateway   = true

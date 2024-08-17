@@ -6,6 +6,7 @@ data "aws_region" "current" {}
 
 data "aws_eks_cluster" "eks_cluster" {
   name = local.cluster_name
+
 }
 
 data "aws_eks_cluster_auth" "eks_cluster" {
@@ -72,10 +73,10 @@ data "aws_iam_policy_document" "kms_log_to_cloudwatch" {
   }
 
   statement {
-    sid = "EcryptDecryptLogsToCloudWatch"
+    sid    = "EcryptDecryptLogsToCloudWatch"
     effect = "Allow"
     principals {
-      type       = "Service"
+      type        = "Service"
       identifiers = ["logs.${local.region}.amazonaws.com"]
     }
     actions = [
@@ -95,9 +96,9 @@ data "aws_iam_policy_document" "kms_log_to_cloudwatch" {
 }
 
 data "aws_iam_policy_document" "fluentbit_sa_irsa_log_to_s3" {
-count = local.use_s3_for_logs == "true" ? 1 : 0
+  count = local.use_s3_for_logs == "true" ? 1 : 0
   statement {
-    sid = "ListObjectsInBucket"
+    sid    = "ListObjectsInBucket"
     effect = "Allow"
     actions = [
       "s3:ListBucket"
@@ -106,15 +107,15 @@ count = local.use_s3_for_logs == "true" ? 1 : 0
   }
 
   statement {
-    sid = "AllObjectActions"
-    effect = "Allow"
-    actions = ["s3:*Object"]
+    sid       = "AllObjectActions"
+    effect    = "Allow"
+    actions   = ["s3:*Object"]
     resources = ["arn:aws:s3:::${local.s3_bucket_configs.s3_bucket_name}/*"]
   }
 }
 
 data "aws_iam_policy_document" "kms_log_to_s3" {
-count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null && local.s3_bucket_configs.s3_kms_key_id == null ? 1 : 0
+  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null && local.s3_bucket_configs.s3_kms_key_id == null ? 1 : 0
   statement {
     sid    = "Enable IAM User Permissions"
     effect = "Allow"
@@ -144,10 +145,10 @@ count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null &
   }
 
   statement {
-    sid = "EcryptDecryptLogsToS3"
+    sid    = "EcryptDecryptLogsToS3"
     effect = "Allow"
     principals {
-      type       = "AWS"
+      type = "AWS"
       #identifiers = [aws_iam_role.fluentbit_sa_irsa.arn]
       identifiers = [format("arn:aws:iam::%s:role/%s-%s", data.aws_caller_identity.current.account_id, var.prefix_name, "sa-role")]
     }
@@ -163,12 +164,12 @@ count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null &
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_enable_tls" {
-count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
+  count = local.use_s3_for_logs == "true" && var.existing_s3_bucket_name == null ? 1 : 0
   statement {
-    sid = "AllowTLSRequestsOnly"
+    sid    = "AllowTLSRequestsOnly"
     effect = "Deny"
     principals {
-      type       = "AWS"
+      type        = "AWS"
       identifiers = ["*"]
     }
     actions = [

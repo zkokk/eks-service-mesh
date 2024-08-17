@@ -8,7 +8,7 @@ locals {
     merge(var.container_definition[0], {
       logConfiguration = {
         logDriver = "awslogs"
-        options   = {
+        options = {
           awslogs-group         = local.cw_loggroup_name
           awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "json"
