@@ -1,6 +1,6 @@
 locals {
-  name            = "swo-onboarding"
-  cluster_version = "1.28"
+  name            = "eks-service-mesh"
+  cluster_version = "1.30"
   region          = var.region
   vpc_id          = "vpc-022d1faa647803d63"
 
