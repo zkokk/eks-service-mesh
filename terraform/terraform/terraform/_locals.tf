@@ -1,9 +1,5 @@
 locals {
-<<<<<<< HEAD
-  name            = "my-cluster"
-=======
   name            = "eks-service-mesh"
->>>>>>> c3b38ad4042de24c6d6e0d98f850c4466fc52635
   cluster_version = "1.30"
   region          = var.region
   vpc_id          = "vpc-022d1faa647803d63"

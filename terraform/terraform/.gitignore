@@ -1,0 +1,50 @@
+#  Local .terraform directories
+**/.terraform/*
+.terraform
+.terraform/providers/registry.terraform.io/hashicorp/aws/5.57.0/darwin_arm64/terraform-provider-aws_v5.57.0_x5
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# temporary local terraform providers
+tf/
+
+# .zip files
+*.zip
+
+#  Local .idea directories
+**/.idea/*
+
+#  Local .DS_Store directories
+*.DS_Store
+
+# Python Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+#  Local VS code settings directories
+**/.vscode/*
+
+# Ignoring dynamically generated AVM accounts folder
+avm_accounts

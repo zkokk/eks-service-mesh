@@ -1,0 +1,33 @@
+name: Deploy k8s cluster
+on:
+  label:
+    type: created
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0 # specify the Terraform version you want to use
+      - name: Configure AWS credentials with role assumption
+        id: aws-assume-role
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: "GitHubActions-Terraform"
+          aws-region: eu-west-1  # replace with your desired AWS region
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'  # restrict apply to the main branch
+        run: terraform apply -input=false tfplan
