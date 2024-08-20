@@ -7,7 +7,7 @@ locals {
   eks_oidc_issuer_url   = var.eks_oidc_issuer_url
   eks_oidc_provider_arn = var.eks_oidc_provider_arn
   prefix_name           = var.prefix_name == null ? "fluent-bit" : var.prefix_name
-  cluster_name          = var.fluentbit_cluster_info_configs["cluster.name"] == null ? "my" : 0
+  cluster_name          = var.fluentbit_cluster_info_configs["cluster.name"] == null ? "swo-onboarding" : 0
 
   fluentbit_image        = var.fluentbit_image == null ? "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable" : var.fluentbit_image
   fluentbit_config_files = fileset(path.module, "fluentbit_configs/*")

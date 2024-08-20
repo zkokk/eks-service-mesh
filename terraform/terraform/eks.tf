@@ -2,10 +2,10 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
 
-  cluster_name    = "my-cluster"
+  cluster_name    = "eks-sm"
   cluster_version = "1.30"
 
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access  = true
 
   cluster_addons = {
     coredns                = {}
@@ -14,8 +14,8 @@ module "eks" {
     vpc-cni                = {}
   }
 
-  vpc_id     = data.aws_vpc.my_vpc_id.id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                   = data.aws_vpc.my_vpc_id.id
+  subnet_ids               = module.vpc.private_subnets
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
@@ -34,24 +34,7 @@ module "eks" {
     }
   }
 
-  authentication_mode                      = "API_AND_CONFIG_MAP" # Cluster access entry
-  enable_cluster_creator_admin_permissions = true
-#  access_entries = {
-#    swo_access = {
-#      kubernetes_group = []
-#      principal_arn    = "arn:aws:iam::924841524423:role/HeleCloud-Admin/hc-sbx-5"
-#
-#      policy_associations = {
-#          this = {
-#            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-#            access_scope = {
-#              type = "cluster"
-#          }
-#        }
-#      }
-#    }
-#  }
-
+ authentication_mode = "API_AND_CONFIG_MAP"  # Cluster access entry
 
   depends_on = [module.vpc]
 }
