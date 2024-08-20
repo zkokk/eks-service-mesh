@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: app-service
   namespace: app
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
 spec:
   selector:
     deploy: green
