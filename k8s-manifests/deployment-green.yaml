@@ -4,16 +4,16 @@ metadata:
   name: cosg-webapp
   namespace: app
   labels:
-    myapp: app
+    deploy: green
 spec:
   replicas: 3
   selector:
     matchLabels:
-      myapp: app
+      deploy: green
   template:
     metadata:
       labels:
-        myapp: app
+        deploy: green
     spec:
       containers:
       - name: app
@@ -22,9 +22,11 @@ spec:
           - name: APP_COLOR
             value: "green"
         resources:
-          limits:
-            cpu: "1"
           requests:
-            cpu: 500m
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
         ports:
         - containerPort: 8080
