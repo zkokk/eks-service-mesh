@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  destination:
+    name: in-cluster
+    namespace: argocd
+  source:
+    path: "${path}"
+    repoURL: "${repoURL}"
+    targetRevision: "${targetRevision}"
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

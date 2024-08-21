@@ -1,6 +1,6 @@
 locals {
 
-  name            = "my-cluster"
+  name            = "eks-sm"
   cluster_version = "1.30"
   region          = var.region
   vpc_id          = "vpc-022d1faa647803d63"
