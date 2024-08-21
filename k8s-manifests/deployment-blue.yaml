@@ -20,7 +20,7 @@ spec:
         image: 924841524423.dkr.ecr.eu-west-1.amazonaws.com/k8s_sm:v1.0
         env:
           - name: APP_COLOR
-            value: "blue"
+            value: "red"
         resources:
           requests:
             memory: "64Mi"
