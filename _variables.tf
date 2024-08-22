@@ -12,7 +12,7 @@ variable "fluentbit_cluster_info_configs" {
   type        = map(string)
   default = {
     "logs.region"  = "eu-west-1",
-    "cluster.name" = "swo-onboarding",
+    "cluster.name" = "eks-sm",
     "http.server"  = "On",
     "http.port"    = "2020",
     "read.head"    = "Off",
