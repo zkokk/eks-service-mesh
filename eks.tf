@@ -19,14 +19,14 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    instance_types = ["t2.medium", "t3.medium"]
+    instance_types = ["t3.large"]
   }
 
   eks_managed_node_groups = {
     example = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_x86_64_STANDARD"
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.large"]
 
       min_size     = 3
       max_size     = 5
@@ -36,24 +36,26 @@ module "eks" {
 
   authentication_mode                      = "API_AND_CONFIG_MAP" # Cluster access entry
   enable_cluster_creator_admin_permissions = true
-#  access_entries = {
-#    swo_access = {
-#      kubernetes_group = []
-#      principal_arn    = "arn:aws:iam::924841524423:role/HeleCloud-Admin/hc-sbx-5"
-#
-#      policy_associations = {
-#          this = {
-#            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-#            access_scope = {
-#              type = "cluster"
-#          }
-#        }
-#      }
-#    }
-#  }
-
-
   depends_on = [module.vpc]
+
+    node_security_group_additional_rules = {
+    ingress_15017 = {
+      description                   = "Cluster API - Istio Webhook namespace.sidecar-injector.istio.io"
+      protocol                      = "TCP"
+      from_port                     = 15017
+      to_port                       = 15017
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    ingress_15012 = {
+      description                   = "Cluster API to nodes ports/protocols"
+      protocol                      = "TCP"
+      from_port                     = 15012
+      to_port                       = 15012
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+  }
 }
 
 #module "vpc_cni_irsa" {

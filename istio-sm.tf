@@ -20,7 +20,7 @@ resource "helm_release" "istio-gw" {
   name             = "istio-ingressgateway"
   repository       = "https://istio-release.storage.googleapis.com/charts"
   chart            = "gateway"
-  namespace        = "istio-system"
+  namespace        = "istio-gw"
   version          = "1.23.0"
   create_namespace = true
 
@@ -28,20 +28,4 @@ resource "helm_release" "istio-gw" {
     helm_release.istio-base,
     helm_release.istiod
   ]
-  set {
-    name  = "resources.requests.cpu"
-    value = "500m"
-  }
-  set {
-    name  = "resources.limits.cpu"
-    value = "600m"
-  }
-  set {
-    name  = "labels.app"
-    value = "istio-gateway"
-  }
-  set {
-    name  = "labels.istio"
-    value = "gateway"
-  }
 }
