@@ -4,15 +4,18 @@ metadata:
   name: cosg-webapp-blue
   namespace: app
   labels:
+    app: web
     deploy: blue
 spec:
   replicas: 3
   selector:
     matchLabels:
+      app: web
       deploy: blue
   template:
     metadata:
       labels:
+        app: web
         deploy: blue
     spec:
       containers:
@@ -20,7 +23,7 @@ spec:
         image: 924841524423.dkr.ecr.eu-west-1.amazonaws.com/k8s_sm:v1.0
         env:
           - name: APP_COLOR
-            value: "red"
+            value: "blue"
         resources:
           requests:
             memory: "64Mi"

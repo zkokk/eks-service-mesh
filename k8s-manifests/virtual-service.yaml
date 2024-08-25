@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: vs-svc   # Service name
+  namespace: app
+spec:
+  hosts:
+  - "*"
+#  - app-service.app.svc.cluster.local  # DNS service name - k8s dns service name
+  gateways:
+  - app-gateway
+  http:
+  - route:
+    - destination:
+        host: app-service.app.svc.cluster.local    # Target service name
+        port:
+          number: 80
+        subset: v1
+      weight: 50
+    - destination:
+        host: app-service.app.svc.cluster.local   # Target service name
+        port:
+          number: 80
+        subset: v2
+      weight: 50

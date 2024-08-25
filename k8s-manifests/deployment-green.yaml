@@ -5,18 +5,18 @@ metadata:
   namespace: app
   labels:
     deploy: green
-    version: 1
+    app: web
 spec:
   replicas: 3
   selector:
     matchLabels:
       deploy: green
-      version: 1
+      app: web
   template:
     metadata:
       labels:
         deploy: green
-        version: 1
+        app: web
     spec:
       containers:
       - name: app

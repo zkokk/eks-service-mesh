@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: webapp-dr
+  namespace: app
+spec:
+  host: app-service.app.svc.cluster.local
+#  host: istio-ingressgateway.istio-gw.svc.cluster.local
+  subsets:
+  - name: v1
+    labels:
+      deploy: green
+  - name: v2
+    labels:
+      deploy: blue
