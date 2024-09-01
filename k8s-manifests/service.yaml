@@ -5,10 +5,9 @@ metadata:
   namespace: app
 spec:
   selector:
-#    istio: ingressgateway
     app: web
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
-  type: ClusterIP
+  type: ClusterIP       # We have Istio external LB which is the entry point to our EKS
